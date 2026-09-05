@@ -3,6 +3,7 @@ package com.mingjia00.al;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.webkit.SslErrorHandler;
+import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
@@ -46,8 +47,7 @@ public class MainActivity extends BridgeActivity {
             @Override
             public void handleOnBackPressed() {
                 // 1) 网页内还有历史记录：在 WebView 中回退，而不是退出 App
-                if (getBridge() != null && getBridge().getWebView() != null
-                        && getBridge().getWebView().canGoBack()) {
+                if (getBridge() != null && getBridge().getWebView() != null && getBridge().getWebView().canGoBack()) {
                     getBridge().getWebView().goBack();
                     return;
                 }
