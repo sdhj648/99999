@@ -1,19 +1,9 @@
 package com.mingjia00.al;
 
-import android.graphics.Color;
-import android.net.http.SslError;
 import android.os.Bundle;
-import android.view.View;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.core.graphics.Insets;
-import androidx.core.view.OnApplyWindowInsetsListener;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.getcapacitor.BridgeActivity;
 
@@ -25,9 +15,9 @@ import com.getcapacitor.BridgeActivity;
  *  2. 已处于站点最首页（无历史可退）-> 第一次按返回键仅提示"再按一次退出应用"，
  *     2.5 秒内再次按返回键才真正退出 App。
  *
- * SSL 处理：兼容部分 Android 版本对 Let's Encrypt 等证书的中间链信任问题。
- *
- * 屏幕适配：自动避开顶部状态栏和底部系统导航栏，避免内容被遮挡。
+ * 屏幕适配说明：targetSdkVersion 为 34（传统布局模式），
+ * 系统状态栏与导航栏各自占位，WebView 内容仅显示在两者之间，
+ * 与手机浏览器打开网页的观感一致，天然不会重叠。
  */
 public class MainActivity extends BridgeActivity {
 
@@ -40,41 +30,21 @@ public class MainActivity extends BridgeActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getBridge() != null && getBridge().getWebView() != null) {
-            final WebView webView = getBridge().getWebView();
-
-            // 兼容老 Android 对新证书链的信任问题：遇到 SSL 错误继续加载
-            webView.setWebViewClient(new WebViewClient() {
-                @Override
-                public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                    handler.proceed();
-                }
-            });
-
-            // 屏幕适配：让 WebView 内容避开顶部状态栏和底部系统导航栏
-            webView.setBackgroundColor(Color.WHITE);
-            ViewCompat.setOnApplyWindowInsetsListener(webView, new OnApplyWindowInsetsListener() {
-                @Override
-                public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-                    Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-                    v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
-                    return WindowInsetsCompat.CONSUMED;
-                }
-            });
-        }
-
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                if (getBridge() != null && getBridge().getWebView() != null && getBridge().getWebView().canGoBack()) {
+                // 1) 网页内还有历史记录：在 WebView 中回退，而不是退出 App
+                if (getBridge() != null && getBridge().getWebView() != null
+                        && getBridge().getWebView().canGoBack()) {
                     getBridge().getWebView().goBack();
                     return;
                 }
 
+                // 2) 已到站点首页：双击返回键才退出
                 long now = System.currentTimeMillis();
                 if (now - lastBackPressTime <= EXIT_INTERVAL_MS) {
                     lastBackPressTime = 0L;
-                    finishAffinity();
+                    finishAffinity(); // 真正退出 App
                 } else {
                     lastBackPressTime = now;
                     Toast.makeText(MainActivity.this,
