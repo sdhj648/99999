@@ -1,0 +1,15 @@
+{
+  "name": "al-remote-shell",
+  "version": "1.0.0",
+  "description": "Capacitor remote Android shell - loads a remote URL directly, builds APK via GitHub Actions",
+  "private": true,
+  "scripts": {
+    "sync": "cap sync android",
+    "build": "cap build android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.1",
+    "@capacitor/cli": "^8.5.1",
+    "@capacitor/core": "^8.5.1"
+  }
+}

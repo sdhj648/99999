@@ -1,0 +1,12 @@
+{
+	"appId": "com.mingjia00.al",
+	"appName": "AL",
+	"webDir": "www",
+	"server": {
+		"url": "https://al.mingjia00.com.cc",
+		"cleartext": false,
+		"allowNavigation": [
+			"al.mingjia00.com.cc"
+		]
+	}
+}
