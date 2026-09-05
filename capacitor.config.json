@@ -3,10 +3,10 @@
   "appName": "AL",
   "webDir": "www",
   "server": {
-    "url": "https://al.mingjia00.com.cc",
+    "url": "https://al.mingjia00.ccwu.cc",
     "cleartext": false,
     "allowNavigation": [
-      "al.mingjia00.com.cc"
+      "al.mingjia00.ccwu.cc"
     ]
   }
 }
